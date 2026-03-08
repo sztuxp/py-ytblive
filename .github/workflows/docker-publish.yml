@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ]  # 当 main 分支有代码推送时触发
+    #branches: [ "main" ]  # 当 main 分支有代码推送时触发
   workflow_dispatch:      # 允许手动触发
 
 jobs:
