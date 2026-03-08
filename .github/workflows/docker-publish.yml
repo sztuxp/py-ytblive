@@ -1,9 +1,14 @@
-name: Build and Push Docker Image
+name: Manual Build and Push py-ytblive
 
+# 修改触发条件：仅允许手动触发
 on:
-  push:
-    #branches: [ "main" ]  # 当 main 分支有代码推送时触发
-  workflow_dispatch:      # 允许手动触发
+  workflow_dispatch:
+    # 你甚至可以添加输入参数，比如手动指定镜像标签
+    inputs:
+      tag_name:
+        description: 'Docker Image Tag (e.g., v1.0.0)'
+        required: true
+        default: 'latest'
 
 jobs:
   build-and-push:
@@ -28,9 +33,11 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          # 构建 AMD64 和 ARM64 双架构，适配多种服务器
           platforms: linux/amd64,linux/arm64
           push: true
+          # 使用手动输入的分支标签，同时保留 commit 哈希作为备份
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/py-ytblive:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/py-ytblive:${{ github.event.inputs.tag_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/py-ytblive:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
